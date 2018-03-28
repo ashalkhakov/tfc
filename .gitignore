@@ -1,0 +1,23 @@
+#
+# ignoring generated files
+#
+*~
+\#*
+.\#*
+*_?ats.o
+*_?ats.c
+*.exe
+
+config.h
+config.h.in
+config.mk
+config.log
+config.status
+missing
+install-sh
+configure
+stamp-h1
+aclocal.m4
+autom4te.cache
+
+###### end of [.gitignore] ######
