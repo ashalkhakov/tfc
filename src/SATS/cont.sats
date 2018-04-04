@@ -12,7 +12,7 @@ absvtype cont(a:vt@ype) = ptr
 vtypedef kfun(a:vt@ype, b:vt@ype) = (a, cont(b)) -> void
 
 // need some base case here no?
-fun{a:t@ype}
+fun{a:vt@ype}
 dummy (INV(a) -> void): cont(a)
 
 // calling a continuation

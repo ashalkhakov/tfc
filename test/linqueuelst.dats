@@ -1,5 +1,6 @@
 #include
 "share/atspre_staload.hats"
+
 staload "./../src/SATS/linqueuelst_vt.sats"
 staload _ = "./../src/DATS/linqueuelst_vt.dats"
 
@@ -8,8 +9,7 @@ overload enqueue with linqueuelst_enqueue
 overload dequeue with linqueuelst_dequeue
 overload queue_free with linqueuelst_free
 
-implement
-main0 () = let
+fun test_eq1 (): void = {
   var xs = queue_create()
   val () = enqueue(xs, 1)
   val () = enqueue(xs, 2)
@@ -18,5 +18,9 @@ main0 () = let
   val () = assertloc ((2:int) = dequeue(xs))
   val () = assertloc ((3:int) = dequeue(xs))
   val () = queue_free (xs)
-in
-end
+}
+
+implement
+main0 () = {
+  val () = test_eq1 ()
+}

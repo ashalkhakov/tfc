@@ -20,4 +20,12 @@ stamp-h1
 aclocal.m4
 autom4te.cache
 
+#
+# atspkg
+#
+tags
+.atspkg
+target
+*.c
+
 ###### end of [.gitignore] ######
