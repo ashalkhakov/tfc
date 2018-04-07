@@ -1,0 +1,61 @@
+#
+# A simple Makefile
+#
+
+######
+
+include \
+$(PATSHOME)/share/atsmake-pre.mk
+
+######
+
+CFLAGS += -O3
+
+######
+
+LDFLAGS := -lm
+
+######
+
+PATSCCOMP = $(CC) -D_XOPEN_SOURCE
+
+######
+
+SOURCES_SATS += \
+  ../src/SATS/heaparray.sats
+
+SOURCES_DATS += \
+  ../src/DATS/heaparray.dats \
+  binheap.dats
+
+######
+
+MYTARGET=binheap
+
+######
+
+regress:: binheap; ./$<
+
+######
+#
+MYPORTDIR=MYPORTDIR
+#
+#MYPORTCPP=MYPORTCPP
+#
+######
+
+include $(PATSHOME)/share/atsmake-post.mk
+
+######
+
+testall:: all
+testall:: cleanall
+
+######
+
+cleanall:: ; $(RMF) MYPORTDIR/*
+
+######
+
+###### end of [Makefile] ######
+
