@@ -11,46 +11,10 @@ staload _ = "./../DATS/cont.dats"
 staload _ = "prelude/DATS/reference.dats"
 staload _ = "prelude/DATS/pointer.dats"
 
-(* ****** ****** *)
-
-absvtype queue (vt@ype+) = ptr
-extern
-fun
-queue_nil {a:vtype} (): queue (a)
-extern
-fun
-enqueue {a:vtype} (&queue(INV(a)) >> queue(a), a): void
-extern
-fun
-dequeue {a:vtype} (&queue(a) >> queue(a), &INV(a)? >> opt (a, b)): #[b:bool] bool b
-
-local
-
-assume queue (a:vt@ype) = List_vt (a)
-
-in
-
-implement
-queue_nil{a} () = list_vt_nil{a} ()
-implement
-enqueue {a} (q, x) = let
-  prval () = lemma_list_vt_param (q)
-in
-  q := list_vt_cons (x, q)
-end
-implement
-dequeue {a} (q, x) =
-  case+ q of
-  | list_vt_nil () => let prval () = opt_none{a}(x) in false end
-  | ~list_vt_cons (x1, q1) => let
-    val () = q := q1
-    val () = x := x1
-    prval () = opt_some{a}(x)
-  in
-    true
-  end
-
-end
+staload "./../SATS/queue_sllist2.sats"
+staload _ = "./queue_sllist2.dats"
+staload _ = "libats/DATS/gnode.dats"
+staload _ = "libats/DATS/sllist.dats"
 
 (* ****** ****** *)
 
@@ -85,9 +49,9 @@ myenqueue (t: thread_t): void
 
 local
 
-vtypedef sched = queue (thread_t)
+vtypedef sched = [n:int] queue (thread_t, n)
 
-var the_threads : sched = queue_nil{thread_t}()
+var the_threads : sched = queue_make_nil{thread_t}()
 val threads : ref(sched) = ref_make_viewptr {sched} (
   view@ the_threads | addr@ the_threads
 )
@@ -95,7 +59,7 @@ val threads : ref(sched) = ref_make_viewptr {sched} (
 implement
 myenqueue (t) = let
   val (vbox pf | p) = (ref_get_viewptr {sched} (threads))
-  val () = $effmask_ref (enqueue{thread_t} (!p, t))
+  val () = $effmask_ref (queue_insert_atend (!p, t))
 in
 end
 
@@ -113,19 +77,16 @@ end
 implement
 mainloop () = {
   fun
-  loop (
-    q: &queue (thread_t)
+  loop {n:int} (
+    q: !queue (thread_t, n) >> queue (thread_t, 0)
   ): void = let
-    var thr: thread_t
+    prval () = lemma_queue_param (q)
   in
-    if :(thr: thread_t?, q: queue (thread_t)) => dequeue (q, thr) then let
-       prval () = opt_unsome {thread_t} (thr)
+    if queue_is_empty q then ()
+    else let
+       var thr = queue_takeout_atbeg (q)
        val () = thread_run (thr)
        val () = loop (q)
-    in
-
-    end else let
-      prval () = opt_unnone {thread_t} (thr)
     in
     end
   end // end of [loop]
